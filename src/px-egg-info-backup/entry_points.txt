@@ -1,0 +1,4 @@
+[console_scripts]
+proteus = ptx.cli:main
+ptx = ptx.cli:main
+px = ptx.cli:main

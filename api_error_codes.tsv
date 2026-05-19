@@ -1,0 +1,418 @@
+# Scylla Cloud API error codes
+# Source: siren/restapi/md/api.md
+# Format: <code>\t<description>
+# To resync: python3 python_lib/sync_api_error_codes.py --md api.md
+000001	Too Many Requests
+000002	Forbidden
+020001	Unauthorized
+020002	Bad Request
+020005	Unauthorized
+020006	Unauthorized
+010101	Error retrieving default account
+010201	Error retrieving account info
+010301	Error retrieving countries
+010401	Invalid request format
+010402	Cannot set Country from a different group
+010403	Error setting account country
+010501	Error getting account active credentials
+010601	Error sending cross account request
+010701	Error getting permissions
+041118	Operation is not allowed
+010801	Invalid 'type' query parameter
+010802	Invalid 'status' query parameter
+010803	Account ID is missing
+010804	Invalid request payload
+010805	Error setting notifications email
+010806	Provided email is invalid
+010807	Account ID is missing
+010808	Error getting notifications email
+011001	Invalid query parameter
+011002	Invalid end/start query parameter, end after start
+011003	Invalid end/start query parameter, minimum 30 minutes timespan
+011004	Something bad happened
+011100	Account has associated cluster resources
+083002	Cluster connection not found
+080020	General error creating cluster connections
+080015	Invalid request format
+080002	Invalid request format
+080001	At least one of properties clusterVPCID or clusterDCID have to be specified
+080003	Firewall rule already exist
+080004	Can't find target VPC
+080005	Can't find target VPC
+080006	Unknown cluster connection type
+080007	Property cidrlist is empty list
+080021	Property cidrlist can't have more than 5 entries
+080019	Property name validation failed
+080008	Provided CIDRs overlaps reserved networks
+080009	Provided CIDRs overlaps existing cluster datacenter CIDR
+080010	Property data.ramARN validation failed
+080011	Property data.tgwID validation failed
+080012	Property data.customerVPCID validation failed
+080013	Property data.customerAccountID validation failed
+080014	Property data.customerNetworkID validation failed
+080016	Invalid firewall rule
+080017	CIDR range is too big, the prefix must be at least /16
+080018	Invalid request parameter
+081005	General error listing cluster connections
+081001	Failed to parse query parameter type
+081002	Failed to parse query parameter cluster-id
+081003	Failed to parse query parameter dc-id
+081004	Failed to parse query parameter vpc-id
+082003	General error getting cluster connection
+082001	Failed to parse connection
+082002	Cluster connection not found
+083003	General error deleting cluster connection
+083001	Failed to parse connection
+084015	General error updating cluster connection
+084014	Invalid request format
+084013	Invalid request format
+084001	Failed to parse connection
+084002	Cluster connection not found
+084003	Property cidrlist is empty list
+084016	Property cidrlist can't have more than 5 entries
+084004	Provided CIDRs overlaps reserved networks
+084005	Provided CIDRs overlaps existing cluster datacenter CIDR
+084006	Property data.ramARN validation failed
+084007	Property data.tgwID validation failed
+084008	Property data.customerVPCID validation failed
+084009	Property data.customerAccountID validation failed
+084010	Property data.customerNetworkID validation failed
+084011	Property name validation failed
+084012	Property status validation failed
+084017	Can't recreate deleted cluster connection
+084018	Cluster connection has wrong status
+085015	General error updating cluster connection
+085014	Invalid request format
+085013	Invalid request format
+085001	Failed to parse connection
+085002	Cluster connection not found
+085003	Property cidrlist is empty list
+085016	Property cidrlist can't have more than 5 entries
+085004	Provided CIDRs overlaps reserved networks
+085005	Provided CIDRs overlaps existing cluster datacenter CIDR
+085006	Property data.ramARN validation failed
+085007	Property data.tgwID validation failed
+085008	Property data.customerVPCID validation failed
+085009	Property data.customerAccountID validation failed
+085010	Property data.customerNetworkID validation failed
+085011	Property name validation failed
+085012	Connection has unexpected status
+020101	Invalid request format
+020102	Error creating user
+020104	Email domain not allowed
+020201	Invalid request format
+020202	Error verifying
+020301	Invalid request format
+020302	General error login
+020303	User must be active to login
+020304	Email or password is incorrect
+020305	Too many failed login attempts
+020306	The password has expired
+020401	Invalid request format
+020402	General logout error
+020501	Error retrieving user info
+020601	Invalid request format
+020602	General password reset error
+020701	Invalid request format
+020702	General password reset error
+020801	Invalid request format
+020803	Password was already used
+020802	General reset password error
+020901	Invalid request format
+020902	General change password error
+020903	Current password is incorrect
+020904	New password was already used
+020905	New password is incorrect
+021001	Invalid request format
+021002	Error resending token
+021003	User already verified
+021101	Invalid request format
+021102	Session token is invalid or expired
+021201	Invalid request format
+021202	Error updating user details
+021301	Invalid request format
+021302	Error creating TOTP password
+021303	Invalid user password
+021304	User already has MFA enabled
+021401	Invalid request format
+021402	Error validating TOTP password
+021403	User already has MFA enabled
+021404	Invalid TOTP UUID
+021405	TOTP verification time expired
+021406	Invalid user TOTP status
+021407	Invalid user passcode
+021501	Invalid request format
+021502	General error TOTP login
+021503	User should have MFA enabled
+021504	Invalid session token
+021505	Invalid session token status
+021506	Session token expired
+021507	Invalid user TOTP status
+021508	Invalid user passcode
+021601	Invalid request format
+021602	Disable user TOTP general error
+021603	Invalid user password
+021604	User should have MFA enabled
+021701	Invalid request format
+021702	Validate and disable user TOTP general error
+021703	Invalid user password
+021704	Invalid user TOTP status
+021705	Invalid user passcode
+021801	Error creating monitor token
+021901	Invalid request format
+021902	Error validating monitor token
+021903	Invalid monitor token
+021904	User status is not Active
+021905	User ID mismatch
+022001	Invalid request format
+030101	Invalid request format
+030102	Error adding billing card
+030401	Error getting billing card info
+030201	Error retrieving billing info
+030202	Error adding account billing info
+030301	Error getting account billing info
+040101	Invalid request format
+040102	General error with adding a new firewall rule
+040103	Firewall rule already exist
+040104	Invalid firewall rule
+040105	CIDR range is too big, the prefix must be at least /16
+040201	General error with retrieving credentials
+040301	General error with retrieving the allowed firewall list
+040401	General error with retrieving the nodes list
+040501	Invalid request format
+040502	General error with retrieving the cluster extended info
+040601	General error with retrieving the clusters list
+040813	Account ID is missing
+040814	Invalid request payload
+040815	Error setting notifications email
+040816	Provided email is invalid
+040817	Account ID is missing
+040818	Error getting notifications email
+040701	Invalid request format
+040702	General error creating the cluster
+040703	Cluster name is already used
+040704	Provided CIDR range is too small
+040705	CIDR does not belong to a private network
+040706	CIDR range is too big
+040707	Account is not eligible for free-tier
+040708	Invalid number of nodes for free tier cluster
+040709	Instance type not eligible for free tier cluster
+040711	Given service version requires AlternatorWriteIsolation
+040714	Firewall rule CIDR range is too big, the prefix must be at least /16
+040712	Cluster name is invalid
+040713	CIDR range overlaps a reserved network
+040715	Account cloud provider is not supported for jump start
+040716	Account is not active
+040717	Account is not eligible for jump start since billing is set
+040718	Account is not eligible for jump start since there is no active cloud account
+040719	Jump start is already used for this account
+040720	Jump start is time expired
+040722	Account billing is not verified
+040723	Account does not have encryption at rest enabled
+040724	General error related to key service
+040725	Invalid request's expiration format
+040726	Too many maintenance windows
+040727	Maintenance window schedule rule format is invalid
+040728	Maintenance window schedule rule is invalid
+040729	Maintenance window duration is too short
+040730	Maintenance window time is out of working hours
+040731	Maintenance windows overlap with each other
+040732	Not enough maintenance windows
+040733	Invalid encryption at rest parameter
+040734	Invalid Tablets mode for X-Cloud
+040735	Invalid ScyllaDB version for X-Cloud
+040736	clusters with X Cloud scaling cannot set Nodes or CloudProviderInstanceType
+040737	clusters with X Cloud scaling must contain valid InstanceFamilies or InstanceTypeIDs, only one of them
+040738	free tier clusters cannot use X Cloud scaling
+040739	one of the Policy fields is not valid
+040740	invalid scaling mode
+040741	alternator is not compatible with tablets
+040742	Invalid vector search configuration
+040743	Only one vector search instance is allowed per availability zone
+040744	Vector search is already installed
+040745	Vector search is not supported on this cluster
+040746	Invalid instance type for vector search
+040747	Mutually exclusive parameters provided for vector search
+040748	Too many vector search nodes specified for the datacenter
+040749	Invalid cloud account configuration
+040751	The specified instance type is not eligible for free tier clusters with vector search
+040752	The specified number of vector-search nodes is not eligible for free tier clusters
+040801	Invalid request format
+040802	General error deleting the cluster
+040803	Cluster name is invalid
+040901	General error deleting the firewall allowed ip
+040902	Invalid firewall rule id
+041001	Invalid request format
+041002	General error resizing the cluster
+041003	Cluster DC must be active to resize the cluster
+041004	Feature is not enabled on cluster
+041005	Resizing by this number of nodes is not permitted. Please contact support for assistance
+041006	Active resize request exists
+041007	Node count is not multiplication of Replication Factor
+041008	clusters with X Cloud scaling cannot be resized
+041009	invalid instance type
+044001	Invalid request format
+044002	General error renaming the cluster
+044003	Cluster must be active to rename the cluster
+044004	Cluster name must be in a valid format
+044005	Cluster name is already used
+041111	General error creating VPC peering connection
+041116	Invalid request format
+041107	Cluster has no VPC
+041108	Cluster has multiple VPC
+041103	Provided VPC is already peered
+041115	Missing peer region ID
+041102	The provided VPC Network blocks intersect, please use a different one.
+041109	CIDR range overlaps a reserved network
+041101	Invalid request format
+041112	Invalid firewall rule
+041113	CIDR range is too big, the prefix must be at least /16
+041114	Invalid request parameter
+041105	Provided VPC ID is invalid
+041106	Provided Account ID is invalid
+041117	General cloud API error
+043001	General error updating cluster connection
+043002	Invalid request format
+043003	Invalid request format
+043005	VPC peering not found
+043006	Property cidrlist is empty list
+043007	Property cidrlist can't have more than 5 entries
+043008	Provided CIDRs overlaps reserved networks
+043009	Provided CIDRs overlaps existing cluster datacenter CIDR
+043010	It is allowed to update only peering with status ACTIVE or INACTIVE
+043011	Property status validation failed, it can only be "ACTIVE","INACTIVE"
+043012	Property status validation failed
+041120	General error listing VPC peering connections
+041130	General error deleting VPC peering connection
+041140	General error describing VPC peering connection
+041150	General error getting cluster VPC list
+041104	The cluster does not have VPC peering enabled
+041141	VPC peering connection not found
+041142	General error reading VPC peering connection
+041160	General error requesting prometheus proxy
+041170	General error getting prometheus proxy tokens
+041171	Prometheus proxy tokens not found
+041180	General error disabling prometheus proxy
+041181	Prometheus Proxy tokens not found
+041190	General error getting cluster requests
+041191	Invalid "type" query parameter
+041192	Invalid "type" query parameter
+041200	General error with retrieving cluster public certificate
+041201	Encryption must be enabled to retrieve cluster public certificate
+041210	General error getting backup task history
+041300	Internal Server Error
+041301	DNS support is already disabled on this cluster
+041302	DNS support is already enabled on this cluster
+041303	There is an active request of the same type
+041400	Unable to retrieve window information
+041401	Unable to retrieve windows list
+041402	Bad request format, rrule is missing in body
+041403	Bad request format, invalid rrule format
+041404	Bad request format, duration needs to be >= 0
+041405	Provided windows overlaps with other windows
+041406	window outside of working hours
+041407	can't delete more windows, minimum required reached
+041408	can't create more windows, max number reached
+041409	Unable to create maintenance window
+041410	Unable to update the maintenance window
+041411	Unable to delete maintenance window
+041412	duration is too short
+041413	Unable to return default maintenance windows
+041500	Unable to change encryption mode
+041601	Invalid query parameter
+041602	Invalid end/start query parameter, end after start
+041603	Invalid end/start query parameter, minimum 30 minutes timespan
+041604	Something bad happened
+041700	Invalid input
+041702	Invalid input
+041704	Cluster does not have a node reboot feature enabled
+041705	Cluster node doesn't exist
+041706	Cluster node is not in active state
+041707	Cluster is locked
+041708	Cluster has actions queued for processing
+041709	'force' must be 'true' or 'false'
+041710	'duration' must be in range 0..900
+0420001	General error getting datacenter list
+0420002	General error getting datacenter info
+0420003	Ill-formed datacenter ID
+0420004	Datacenter not found
+0420005	Datacenter does not belong to cluster
+0420007	General error requesting to add data center
+0420008	Provided CIDR block overlaps with another data center
+0420009	Provided CIDR block overlaps with VPC peer
+0420010	CIDR range is too small
+0420011	CIDR does not belong to a private network
+0420012	CIDR does not belong to a private network
+0420014	CIDR range overlaps a reserved network
+0420015	General error creating datacenter rescale request
+0420006	Datacenter is not active
+0420017	Current and new sizes are the same
+0420018	Free tier clusters cannot be rescaled
+0420019	Development clusters cannot be rescaled
+0420020	Node count must be a multiplication of RF
+0420021	Account billing is not verified
+0430001	Invalid query parameter
+0430002	Invalid end/start query parameter, end after start
+0430003	Invalid end/start query parameter, minimum 30 minutes timespan
+0430004	Something bad happened
+046101	Invalid vector search configuration
+046102	Vector search is already installed
+046103	Vector search is not supported on this cluster
+046104	Invalid instance type for vector search
+046105	Only one vector search instance is allowed per availability zone
+046106	At least one node is required for vector search to operate
+046107	Too many vector search nodes specified for the rack
+046108	Invalid rack specified
+046109	Datacenter is not active
+046110	Mutually exclusive parameters provided
+046111	Too many vector search nodes specified for the datacenter
+046113	The specified instance type is not eligible for free tier clusters with vector search
+046114	The specified number of vector-search nodes is not eligible for free tier clusters
+046115	Vector search is already enabled in this datacenter
+046201	Vector search is not supported on this cluster
+046202	Datacenter is not active
+046203	Invalid instance type for vector search
+046204	Vector search node count must be greater than zero
+046205	Too many vector search nodes specified for the datacenter
+046206	Free tier clusters cannot use vector search
+046301	General error getting vector search information
+050101	Error running health checks
+060101	General error
+060102	Agents need to use the ZenDesk portal
+070101	Error listing the cloud accounts
+070201	Error creating a new cloud account
+070203	Invalid request format
+070204	Unsupported CloudProviderID
+070301	Error deleting the cloud accounts
+070303	The cloud account is used by one or more cluster DC
+070401	Error updating the cloud account
+070403	CloudRoleExternalID must match the existing value
+070404	BoundaryPolicyARN field AccountID must match AWSAccountID
+070405	CloudPolicyARN field AccountID must match AWSAccountID
+070406	CloudRoleARN field AccountID must match AWSAccountID
+070407	AWSAccountID must be a valid 12-digit account ID or be empty
+070408	BoundaryPolicyARN must be a valid ARN or be empty
+070409	BoundaryPolicyARN must be a policy
+070410	CloudPolicyARN must be a valid ARN or be empty
+070411	CloudPolicyARN must be a policy
+070412	CloudRoleARN must be a valid ARN or be empty
+070413	CloudRoleARN must be a role
+070414	The cloud account is used by one or more cluster DC
+070501	Error getting the AWS boundary IAM policy document
+070601	Error getting the AWS cloud IAM policy document
+070603	Invalid request format
+070604	Cloud policy name must be between 1 and 64 characters, and use only word characters or symbols: +=,./@-
+070605	Unsupported cloud provider
+070606	The boundary policy ARN is not set
+070607	The AWS account ID is not set
+070701	Error checking the cloud account policies
+070703	The cloud account properties are not complete
+070801	Error getting the cloud account clusters
+070901	The cloud account was not found
+070902	The cloud account is invalid
+070903	Failed to parse query parameter
+071001	Failed to parse region
+071002	Region not found
+071003	Cloud account not found
+071004	Cloud account and region belong to different cloud providers
+090101	Invalid target filter parameter

@@ -1,0 +1,116 @@
+---
+# ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+# ┃ Scylla Cloud Management Configuration                                       ┃
+# ┃ Public-facing API for provisioning and managing Scylla Cloud clusters       ┃
+# ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+# Global Settings
+api:
+  token: "${SCYLLA_CLOUD_API_TOKEN}"             # Scylla Cloud API token (can use env var)
+  timeout: 300                                   # API request timeout in seconds
+  ssl_verify: true                               # Verify SSL certificates
+  ssh_key_public: "~/.ssh/id_ed25519.pub"       # Global public SSH key path
+  ssh_key_private: "~/.ssh/id_ed25519"          # Global private SSH key path
+  allow_create: false                            # Safety guard: set to true to allow 'px setup' to create any cluster
+  allow_destroy: false                           # Safety guard: set to true to allow 'px destroy' on any cluster (can be overridden per cluster)
+
+# Reference Data (friendly values -> Scylla Cloud IDs)
+reference_data:
+  cloud_data_path: "./cloud-data.json"           # Maps provider/region/instance names to IDs used by API
+  api_error_codes_path: "./api_error_codes.tsv"  # Error code catalog for decoding API failures
+  auto_refresh: false                             # If true, refresh from API before each run
+
+# Cluster Definitions
+clusters:
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Example 1: New X-Cloud cluster on AWS
+  # ─────────────────────────────────────────────────────────────────────────────
+  c1:
+    cluster_name: "prod-xc-aws"                  # Cluster display name (max 63 chars, lowercase, hyphens ok)
+    description: "Production X-Cloud cluster on AWS"
+    cluster_type: "x-cloud"                      # x-cloud | scylla-cloud
+    
+    # Safety guards — both default to false; must be explicitly enabled to allow destructive operations
+    allow_create: false                          # Set to true to allow 'px setup' to create this cluster
+    allow_destroy: false                         # Set to true to allow 'px destroy' to delete this cluster (overrides api-level)
+
+    # Link to existing cluster (optional) — if set, skip creation and attach to existing cluster
+    existing_cluster_id: null                    # Set to cluster-id to manage existing cluster
+    
+    # Cloud & Availability
+    cloud: "aws"                                 # aws | gcp
+    region: "us-west-2"                          # Primary region
+    # Optional explicit IDs (if set, overrides lookup from cloud-data.json)
+    resolved_ids:
+      cloud_provider_id: null                     # Example AWS=1, GCP=2 (depends on account/API)
+      region_id: null                             # Region ID in Scylla Cloud API
+    
+    # Cluster Configuration
+    scylla_version: "2026.1.1"                   # Must be available in Scylla Cloud API
+    api_interface: "CQL"                         # CQL (default) | ALTERNATOR (DynamoDB API)
+    replication_factor: 3                        # RF for created tables
+    
+    # Network
+    broadcast_type: "PRIVATE"                    # PRIVATE (VPC peering) | PUBLIC
+    cidr_block: "172.31.0.0/24"                  # Cluster VPC CIDR (must not overlap with loader/existing VPCs)
+    
+    # Infrastructure Scaling (X-Cloud auto-scaling policy)
+    scaling:
+      instance_families:                         # Instance families allowed for auto-scaling
+        - "i8g"
+      instance_types: []                         # Optional: restrict to specific types (empty = any in family)
+        # - "i8g.4xlarge"
+        # - "i8g.8xlarge"
+      instance_type_ids: []                      # Optional explicit API instanceTypeIDs (overrides name-based lookup)
+      storage:
+        min_gb: 1024                             # Minimum storage before scale-down (0 = no floor)
+        target_utilization: 80                   # Scale up when utilization reaches %
+      vcpu:
+        min: 12                                  # Minimum vCPU count for scale-down threshold
+    
+    # Optional: Enable vector search nodes
+    vector_search:
+      enabled: false                             # Set to true to deploy vector search
+      count: 2                                   # Number of vector search nodes
+      instance_type: "r7g.large"                 # Must be available in region
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Example 2: New standard Scylla Cloud cluster on GCP
+  # ─────────────────────────────────────────────────────────────────────────────
+  c2:
+    cluster_name: "prod-sc-gcp"
+    description: "Standard Scylla Cloud cluster on GCP"
+    cluster_type: "scylla-cloud"                 # Standard Scylla Cloud
+
+    allow_create: false                          # Set to true to allow 'px setup' to create this cluster
+    allow_destroy: false                         # Set to true to allow 'px destroy' to delete this cluster
+
+    existing_cluster_id: null
+    
+    cloud: "gcp"
+    region: "us-central1"
+    resolved_ids:
+      cloud_provider_id: null
+      region_id: null
+    scylla_version: "2026.1.1"
+    api_interface: "ALTERNATOR"                  # Can use ALTERNATOR for DynamoDB API
+    replication_factor: 3
+    
+    broadcast_type: "PRIVATE"
+    cidr_block: "172.31.1.0/24"
+    
+    # GCP-specific
+    gcp_project_id: "my-gcp-project"             # GCP project where cluster is deployed
+    
+    # Node configuration for scylla-cloud (fixed node groups)
+    node_groups:
+      - name: "primary"
+        node_type: "n2-highmem-8"                # GCP machine type
+        node_type_id: null                        # Optional explicit Scylla Cloud instanceId
+        count: 3                                 # Node count in group
+    
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Example 4: Existing Scylla Cloud / X Cloud
+  # ─────────────────────────────────────────────────────────────────────────────
+  c3:
+    existing_cluster_id: "scylla-cloud-cluster-id"   # REQUIRED to manage without creating `px sync c3` can be used to import cluster details into the config file

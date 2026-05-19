@@ -1,0 +1,51 @@
+api:
+  token: ${SCYLLA_CLOUD_API_TOKEN}
+  timeout: 300
+  ssl_verify: true
+  ssh_key_public: ~/.ssh/id_ed25519.pub
+  ssh_key_private: ~/.ssh/id_ed25519
+  allow_create: false
+  allow_destroy: false
+reference_data:
+  cloud_data_path: ./cloud-data.json
+  api_error_codes_path: ./api_error_codes.tsv
+  auto_refresh: false
+clusters:
+  x1:
+    existing_cluster_id: 49515
+    cluster_name: x-cloud-2006-1-3-589
+    cluster_type: x-cloud
+    cloud: aws
+    region: us-west-2
+    scylla_version: 2026.1.3
+    api_interface: CQL
+    broadcast_type: PRIVATE
+    cidr_block: 10.18.0.0/24
+    replication_factor: 3
+    scaling:
+      instance_families:
+      - i8g
+      storage:
+        min_gb: 1024
+        target_utilization: 90
+      vcpu:
+        min: 24
+  x2:
+    existing_cluster_id: 49516
+    cluster_name: x-cloud-2025-4-6-478
+    cluster_type: x-cloud
+    cloud: aws
+    region: us-west-2
+    scylla_version: 2025.4.6
+    api_interface: CQL
+    broadcast_type: PRIVATE
+    cidr_block: 10.17.0.0/24
+    replication_factor: 3
+    scaling:
+      instance_families:
+      - i8g
+      storage:
+        min_gb: 1024
+        target_utilization: 90
+      vcpu:
+        min: 24

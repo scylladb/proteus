@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "proteus"
+version = "0.1.0"
+description = "Proteus — SAF-style CLI for managing Scylla Cloud and X-Cloud clusters"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "PyYAML>=6.0",
+  "requests>=2.31.0",
+]
+
+[project.scripts]
+proteus = "px.cli:main"
+px = "px.cli:main"
+ptx = "px.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]

@@ -1,0 +1,4 @@
+[console_scripts]
+proteus = px.cli:main
+ptx = px.cli:main
+px = px.cli:main
