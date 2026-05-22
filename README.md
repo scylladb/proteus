@@ -296,6 +296,8 @@ px status x1      # Single cluster with full node detail
 | `[✘]` | ERROR / FAILED / DELETED |
 | `[–]` | Unknown / not yet provisioned |
 
+The **Version** column in the multi-cluster status table displays the Scylla version followed by the API interface label — `(CQL)` or `(Alternator)` — derived from the cluster's `api_interface` field.
+
 ### `px destroy <cluster-id>`
 
 Delete a cluster. Three confirmation gates:
