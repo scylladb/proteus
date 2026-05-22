@@ -1522,7 +1522,9 @@ def _render_unified_status_table(clusters: list[dict[str, Any]]) -> None:
         cluster_id = str(cluster.get("cluster_id", "-"))
         cluster_name = str(cluster.get("cluster_name", "-"))
         cloud_id = cluster.get("cloud_id")
-        scylla_version = str(cluster.get("scylla_version", "-"))
+        api_iface = str(cluster.get("api_interface") or "CQL").upper()
+        iface_label = "(Alternator)" if api_iface == "ALTERNATOR" else "(CQL)"
+        scylla_version = f"{cluster.get('scylla_version', '-')} {iface_label}"
         cloud_env = str(cluster.get("cloud_env", "-"))
         node_groups = cluster.get("node_groups", [])
         cluster_status = cluster.get("cluster_status", "UNKNOWN")

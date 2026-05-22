@@ -44,4 +44,5 @@ Thumbs.db
 
 # Proteus runtime
 config.yml
+px-saf-config.yml
 .px_requests.json
