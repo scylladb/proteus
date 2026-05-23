@@ -57,6 +57,7 @@ def _merge_cluster_overrides(base: dict[str, Any], args: argparse.Namespace) -> 
         "region": gv("region"),
         "scylla_version": gv("scylla_version"),
         "api_interface": gv("api_interface"),
+        "alternator_write_isolation": gv("alternator_write_isolation"),
         "replication_factor": gv("replication_factor"),
         "broadcast_type": gv("broadcast_type"),
         "cidr_block": gv("cidr_block"),
@@ -740,6 +741,17 @@ def _build_create_payload(
         "userApiInterface": str(cluster.get("api_interface") or "CQL").upper(),
         "freeTier": False,
     }
+
+    # For Alternator clusters, include write isolation policy.
+    if payload["userApiInterface"] == "ALTERNATOR":
+        isolation = str(cluster.get("alternator_write_isolation") or "only_rmw_uses_lwt").strip().lower()
+        allowed = {"forbid", "only_rmw_uses_lwt", "always"}
+        if isolation not in allowed:
+            raise ConfigError(
+                f"{cluster_id}: alternator_write_isolation must be one of: "
+                "forbid, only_rmw_uses_lwt, always"
+            )
+        payload["alternatorWriteIsolation"] = isolation
 
     if not payload["cidrBlock"]:
         raise ConfigError(f"{cluster_id}: cidr_block is required")
@@ -2197,6 +2209,8 @@ def cmd_validate(args: argparse.Namespace) -> None:
         _die("No clusters to validate. Provide cluster IDs or a config with clusters.")
 
     problems: list[str] = []
+    allowed_api_interfaces = {"CQL", "ALTERNATOR"}
+    allowed_alt_write_isolation = {"forbid", "only_rmw_uses_lwt", "always"}
 
     for cid in cluster_ids:
         try:
@@ -2204,6 +2218,24 @@ def cmd_validate(args: argparse.Namespace) -> None:
             if cid in (conf.get("clusters") or {}):
                 base = get_cluster(conf, cid)
             cluster = _merge_cluster_overrides(base, args)
+
+            api_iface = str(cluster.get("api_interface") or "CQL").strip().upper()
+            if api_iface not in allowed_api_interfaces:
+                raise ConfigError("api_interface must be CQL or ALTERNATOR")
+
+            if api_iface == "ALTERNATOR":
+                isolation = str(cluster.get("alternator_write_isolation") or "").strip().lower()
+                if not isolation:
+                    raise ConfigError(
+                        "alternator_write_isolation is required when api_interface=ALTERNATOR "
+                        "(allowed: forbid, only_rmw_uses_lwt, always)"
+                    )
+                if isolation not in allowed_alt_write_isolation:
+                    raise ConfigError(
+                        "alternator_write_isolation must be one of: "
+                        "forbid, only_rmw_uses_lwt, always"
+                    )
+
             provider_id, region_id = _resolve_ids(cluster, cloud_data)
             ctype = str(cluster.get("cluster_type") or "")
             if ctype not in ("x-cloud", "scylla-cloud"):
@@ -2335,6 +2367,11 @@ def _add_cluster_override_args(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--region", help="Cloud region")
     parser.add_argument("--scylla-version", help="Scylla version")
     parser.add_argument("--api-interface", choices=["CQL", "ALTERNATOR"], help="User API interface")
+    parser.add_argument(
+        "--alternator-write-isolation",
+        choices=["forbid", "only_rmw_uses_lwt", "always"],
+        help="Alternator write isolation policy for x-cloud/scylla-cloud create when api_interface=ALTERNATOR",
+    )
     parser.add_argument("--replication-factor", type=int, help="Replication factor")
     parser.add_argument("--broadcast-type", choices=["PRIVATE", "PUBLIC"], help="Cluster broadcast type")
     parser.add_argument("--cidr-block", help="Cluster CIDR block")

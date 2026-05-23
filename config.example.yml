@@ -48,6 +48,7 @@ clusters:
     # Cluster Configuration
     scylla_version: "2026.1.1"                   # Must be available in Scylla Cloud API
     api_interface: "CQL"                         # CQL (default) | ALTERNATOR (DynamoDB API)
+    # alternator_write_isolation: "only_rmw_uses_lwt"  # ALTERNATOR only (x-cloud/scylla-cloud): forbid | only_rmw_uses_lwt (default) | always
     replication_factor: 3                        # RF for created tables
     
     # Network
@@ -94,6 +95,7 @@ clusters:
       region_id: null
     scylla_version: "2026.1.1"
     api_interface: "ALTERNATOR"                  # Can use ALTERNATOR for DynamoDB API
+    alternator_write_isolation: "only_rmw_uses_lwt"  # ALTERNATOR only: forbid | only_rmw_uses_lwt | always
     replication_factor: 3
     
     broadcast_type: "PRIVATE"

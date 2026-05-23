@@ -132,6 +132,7 @@ Each entry under `clusters:` is keyed by a cluster ID (used positionally on the 
 | `region` | string | Yes | e.g. `us-west-2`, `us-east1`. |
 | `scylla_version` | string | Yes | e.g. `2026.1.3`. |
 | `api_interface` | enum | No | `CQL` (default) or `ALTERNATOR` (DynamoDB-compatible). |
+| `alternator_write_isolation` | enum | No | Alternator write policy for create calls: `forbid`, `only_rmw_uses_lwt` (default), `always`. Applied when `api_interface: ALTERNATOR` on `x-cloud` or `scylla-cloud`. |
 | `replication_factor` | int | No | Default `3`. |
 | `broadcast_type` | enum | Yes | `PRIVATE` (VPC peering) or `PUBLIC`. |
 | `cidr_block` | string | Yes | Cluster VPC CIDR. Must not overlap with loader or peer VPCs. |
@@ -313,6 +314,7 @@ clusters:
     region: us-central1
     scylla_version: 2026.1.3
     api_interface: CQL
+    # alternator_write_isolation: only_rmw_uses_lwt
     broadcast_type: PRIVATE
     cidr_block: 172.32.0.0/24
     node_groups:
