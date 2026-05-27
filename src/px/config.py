@@ -97,11 +97,27 @@ def get_cluster(conf: dict[str, Any], cluster_id: str) -> dict[str, Any]:
     return cluster
 
 
+def _reorder_before_regions(cluster: dict, updates: dict) -> dict:
+    """Return cluster dict with updated keys inserted just before 'regions'."""
+    result = {}
+    inserted = False
+    for k, v in cluster.items():
+        if k in updates:
+            continue
+        if k == "regions" and not inserted:
+            result.update(updates)
+            inserted = True
+        result[k] = v
+    if not inserted:
+        result.update(updates)
+    return result
+
+
 def write_back_cluster_field(config_path: Path, cluster_id: str, key: str, value: Any) -> None:
     data = load_config(config_path)
     clusters = data.setdefault("clusters", {})
     cluster = clusters.setdefault(cluster_id, {})
-    cluster[key] = value
+    clusters[cluster_id] = _reorder_before_regions(cluster, {key: value})
     config_path.write_text(yaml.safe_dump(data, sort_keys=False))
 
 
@@ -110,5 +126,5 @@ def write_back_cluster_fields(config_path: Path, cluster_id: str, fields: dict[s
     data = load_config(config_path)
     clusters = data.setdefault("clusters", {})
     cluster = clusters.setdefault(cluster_id, {})
-    cluster.update(fields)
+    clusters[cluster_id] = _reorder_before_regions(cluster, fields)
     config_path.write_text(yaml.safe_dump(data, sort_keys=False))
