@@ -484,7 +484,15 @@ def _wait_for_request(
     deadline = start + timeout_seconds
     last_desc = ""
     while True:
-        resp = api.get_cluster_request(account_id, request_id)
+        try:
+            resp = api.get_cluster_request(account_id, request_id)
+        except APIError as exc:
+            if time.monotonic() >= deadline:
+                _die(f"Timed out waiting for request {request_id}: last error: {exc}")
+            elapsed = _fmt_elapsed(time.monotonic() - start)
+            print(f"  [{elapsed}] [API_ERROR] {exc} — retrying", flush=True)
+            time.sleep(max(1, poll_interval_seconds))
+            continue
         data = resp.get("data") or {}
         status = str(data.get("status") or data.get("Status") or "UNKNOWN").upper()
         pct = data.get("progressPercent") if data.get("progressPercent") is not None else data.get("ProgressPercent", 0)
