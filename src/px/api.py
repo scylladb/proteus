@@ -23,7 +23,10 @@ class ScyllaCloudAPI:
 
     def _request(self, method: str, path: str, **kwargs: Any) -> dict[str, Any]:
         url = f"{self.base_url}{path}"
-        resp = self.session.request(method, url, timeout=self.timeout, verify=self.verify, **kwargs)
+        try:
+            resp = self.session.request(method, url, timeout=self.timeout, verify=self.verify, **kwargs)
+        except requests.RequestException as exc:
+            raise APIError(f"Request failed: {exc}") from exc
         if resp.status_code >= 400:
             raise APIError(f"HTTP {resp.status_code}: {resp.text}")
         try:
