@@ -136,6 +136,8 @@ Each entry under `clusters:` is keyed by a cluster ID (used positionally on the 
 | `replication_factor` | int | No | Default `3`. |
 | `broadcast_type` | enum | Yes | `PRIVATE` (VPC peering) or `PUBLIC`. |
 | `cidr_block` | string | Yes | Cluster VPC CIDR. Must not overlap with loader or peer VPCs. |
+| `az_mode` | enum | No | `single-az` or `multi-az`. Omit to let the Cloud API place nodes automatically. Applies to both `x-cloud` and `scylla-cloud`. See [Availability Zones](#availability-zones). |
+| `racks` | int | No | `multi-az` only: number of distinct AZs to span. Default `3`. |
 | `resolved_ids.cloud_provider_id` | int | No | Explicit `cloudProviderId` — skips lookup. |
 | `resolved_ids.region_id` | int | No | Explicit `regionId` — skips lookup. |
 
@@ -150,6 +152,45 @@ clusters:
     broadcast_type: PRIVATE
     cidr_block: 172.31.0.0/24
 ```
+
+### Availability Zones
+
+`az_mode` controls how nodes are placed across a region's availability zones,
+mirroring the enterprise (`infra_code/`) vocabulary so both deployment paths use
+the same words:
+
+| `az_mode` | Placement |
+|-----------|-----------|
+| _(omitted)_ | Cloud API default — nodes spread automatically. No AZ fields sent. |
+| `single-az` | All nodes pinned to a single AZ. Use for lowest-latency / cost tests where AZ resiliency isn't needed. |
+| `multi-az` | Nodes spread across the first `racks` AZs of the region (default `3`). |
+
+Proteus resolves friendly config into the Cloud API `createCluster` fields:
+`availabilityZoneIdsOverride` (a list of AZ IDs — e.g. `use1-az1` for AWS, zone
+names like `us-east1-b` for GCP) plus `placement: "true"`. AZ IDs are fetched
+from `GET /account/{id}/cloud-account/{credId}/region/{regionId}/zones`, so no
+local cloud credentials are needed.
+
+- **single-az** repeats one AZ ID `replication_factor` times.
+- **multi-az** uses the first `racks` distinct AZ IDs; if the region has fewer
+  AZs than `racks`, setup fails with a clear error.
+
+```yaml
+clusters:
+  x1:
+    cluster_type: x-cloud
+    region: us-west-2
+    replication_factor: 3
+    az_mode: single-az        # all 3 racks in one AZ
+  x2:
+    cluster_type: scylla-cloud
+    region: us-east-1
+    az_mode: multi-az
+    racks: 3                  # spread across 3 AZs
+```
+
+Visible in `px setup --dry-run` — the printed create payload shows the resolved
+`availabilityZoneIdsOverride` / `placement` before any API call.
 
 ---
 

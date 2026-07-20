@@ -40,6 +40,8 @@ clusters:
     # Cloud & Availability
     cloud: "aws"                                 # aws | gcp
     region: "us-west-2"                          # Primary region
+    az_mode: "multi-az"                          # single-az | multi-az (omit = let Cloud API default). single-az pins all nodes to one AZ; multi-az spreads across `racks` AZs.
+    racks: 3                                     # multi-az only: number of distinct AZs to span (default 3)
     # Optional explicit IDs (if set, overrides lookup from cloud-data.json)
     resolved_ids:
       cloud_provider_id: null                     # Example AWS=1, GCP=2 (depends on account/API)
@@ -90,6 +92,8 @@ clusters:
     
     cloud: "gcp"
     region: "us-central1"
+    az_mode: "single-az"                         # single-az | multi-az (omit = let Cloud API default)
+    racks: 3                                     # multi-az only: number of distinct AZs to span (default 3)
     resolved_ids:
       cloud_provider_id: null
       region_id: null
