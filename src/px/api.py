@@ -41,6 +41,21 @@ class ScyllaCloudAPI:
     def get_cloud_accounts(self, account_id: int) -> dict[str, Any]:
         return self._request("GET", f"/account/{account_id}/cloud-account")
 
+    def get_cloud_account_zones(
+        self, account_id: int, cloud_account_id: int, region_id: int
+    ) -> dict[str, Any]:
+        """Return the availability zones for a cloud account in a region.
+
+        Each entry in the ``data`` list has an ``id`` (AZ ID, e.g. "use1-az1"
+        for AWS or a zone name like "us-east1-b" for GCP) and a human-facing
+        ``name``. The ``id`` is what createCluster's availabilityZoneIdsOverride
+        expects.
+        """
+        return self._request(
+            "GET",
+            f"/account/{account_id}/cloud-account/{cloud_account_id}/region/{region_id}/zones",
+        )
+
     def get_cloud_providers(self) -> dict[str, Any]:
         return self._request("GET", "/deployment/cloud-providers")
 

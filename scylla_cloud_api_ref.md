@@ -208,6 +208,8 @@ Request body template:
   "userApiInterface": "CQL",
   "freeTier": false,
   "tablets": "enforced",
+  "availabilityZoneIdsOverride": ["usw2-az1", "usw2-az1", "usw2-az1"],
+  "placement": "true",
   "scaling": {
     "instanceFamilies": ["i8g"],
     "instanceTypeIDs": [],
@@ -238,6 +240,8 @@ Key arguments:
 - regionId: Numeric cloud region ID. Fetch via GET /deployment/cloud-provider/{id}/regions.
 - scyllaVersion: Target Scylla version. Discover with GET /deployment/scylla-versions.
 - tablets: Use enforced for X-Cloud.
+- availabilityZoneIdsOverride: Optional. Forces node VMs onto specific AZs. AWS = AZ IDs (e.g. usw2-az1); GCP = zone names (e.g. us-west2-b). Fetch valid IDs via GET /account/{accountId}/cloud-account/{cloudAccountId}/region/{regionId}/zones. For single-AZ, list the same AZ ID replicationFactor times; for multi-AZ, list one ID per AZ to span.
+- placement: Optional "true" | "false". Set "true" whenever availabilityZoneIdsOverride is used; required for single-AZ (all nodes in one AZ).
 - scaling.instanceFamilies: Allowed family list, usually one family for X-Cloud (for example i8g, i7i).
 - scaling.instanceTypeIDs: If empty, X-Cloud picks cost/perf-suitable sizes in the chosen family.
 - scaling.mode: xcloud.

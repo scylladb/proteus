@@ -258,6 +258,62 @@ def _cloud_credential_id(api: ScyllaCloudAPI, account_id: int, provider_id: int)
     return -1
 
 
+def _apply_az_placement(
+    api: ScyllaCloudAPI,
+    account_id: int,
+    cloud_account_id: int,
+    region_id: int,
+    cluster: dict[str, Any],
+    cluster_ref: str,
+    payload: dict[str, Any],
+) -> None:
+    """Set availabilityZoneIdsOverride + placement on the create payload.
+
+    Reuses the enterprise-side vocabulary:
+      az_mode: "single-az" | "multi-az"   (unset -> leave to API default)
+      racks:   N                          (multi-az: how many AZs to span, default 3)
+
+    single-az: pin every rack to one AZ (repeat the AZ ID replicationFactor
+    times) and set placement=true, as the Cloud API requires for a single AZ.
+    multi-az:  spread across the first `racks` distinct AZs in the region.
+    """
+    az_mode = str(cluster.get("az_mode") or "").strip().lower()
+    if not az_mode:
+        return
+    if az_mode not in ("single-az", "multi-az"):
+        raise ConfigError(
+            f"{cluster_ref}: az_mode must be 'single-az' or 'multi-az' (got '{az_mode}')"
+        )
+
+    resp = api.get_cloud_account_zones(account_id, cloud_account_id, region_id)
+    zones = resp.get("data") or []
+    az_ids = [str(z["id"]) for z in zones if isinstance(z, dict) and z.get("id")]
+    az_ids.sort()
+    if not az_ids:
+        raise ConfigError(
+            f"{cluster_ref}: no availability zones returned for region_id={region_id}"
+        )
+
+    rf = int(payload.get("replicationFactor", 3))
+
+    if az_mode == "single-az":
+        override = [az_ids[0]] * max(rf, 1)
+    else:  # multi-az
+        racks = int(cluster.get("racks", 3))
+        if racks < 1:
+            raise ConfigError(f"{cluster_ref}: racks must be >= 1")
+        distinct = az_ids[:racks]
+        if len(distinct) < racks:
+            raise ConfigError(
+                f"{cluster_ref}: region has only {len(az_ids)} AZ(s) "
+                f"({', '.join(az_ids)}) but racks={racks} were requested"
+            )
+        override = distinct
+
+    payload["availabilityZoneIdsOverride"] = override
+    payload["placement"] = "true"
+
+
 def _cluster_numeric_id(cluster: dict[str, Any]) -> int:
     cid = cluster.get("existing_cluster_id")
     if cid in (None, "", 0):
@@ -1318,6 +1374,16 @@ def cmd_setup(args: argparse.Namespace) -> None:
         provider_id,
         region_id,
         account_credential_id,
+    )
+
+    _apply_az_placement(
+        api,
+        account_id,
+        account_credential_id,
+        region_id,
+        cluster,
+        cluster_ref,
+        payload,
     )
 
     _print_json("Create payload:", payload)
