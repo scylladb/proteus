@@ -297,8 +297,16 @@ def _apply_az_placement(
     rf = int(payload.get("replicationFactor", 3))
 
     if az_mode == "single-az":
+        # All nodes must land in exactly one AZ — repeat the same AZ ID so the
+        # override list is never empty, but assert there is truly one distinct
+        # AZ before it goes on the wire, so a future refactor can't silently
+        # spread a "single-az" cluster across multiple AZs.
         override = [az_ids[0]] * max(rf, 1)
-    else:  # multi-az
+        assert len(set(override)) == 1, (
+            f"{cluster_ref}: single-az placement must resolve to exactly one AZ, got {override}"
+        )
+        print(f"[az-placement] {cluster_ref}: single-az -> all nodes pinned to AZ '{az_ids[0]}'")
+    else:  # multi-az — default/current behaviour, unchanged
         racks = int(cluster.get("racks", 3))
         if racks < 1:
             raise ConfigError(f"{cluster_ref}: racks must be >= 1")
@@ -309,6 +317,7 @@ def _apply_az_placement(
                 f"({', '.join(az_ids)}) but racks={racks} were requested"
             )
         override = distinct
+        print(f"[az-placement] {cluster_ref}: multi-az -> nodes spread across AZs {distinct}")
 
     payload["availabilityZoneIdsOverride"] = override
     payload["placement"] = "true"
