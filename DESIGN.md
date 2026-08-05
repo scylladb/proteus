@@ -234,7 +234,6 @@ Resolution: `--api-token` → `$SCYLLA_CLOUD_API_TOKEN` → `api.token`. Env var
 
 - `broadcast_type: PRIVATE` uses VPC peering; `PUBLIC` is internet-reachable.
 - `cidr_block` must not overlap peers or other clusters.
-- SSH keys (`api.ssh_key_public` / `api.ssh_key_private`) reference local paths; only the public key is sent to the API.
 
 ---
 

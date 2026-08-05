@@ -38,8 +38,6 @@ api:
   token: ...
   timeout: 300
   ssl_verify: true
-  ssh_key_public: ...
-  ssh_key_private: ...
 
 reference_data:
   cloud_data_path: ./cloud-data.json
@@ -63,8 +61,6 @@ clusters:
 | `token` | string | Yes | — | Prefer `${SCYLLA_CLOUD_API_TOKEN}` env substitution. Also resolvable via `--api-token` or env. |
 | `timeout` | int | No | `300` | Request timeout (seconds). |
 | `ssl_verify` | bool | No | `true` | Disable with `--no-ssl-verify` for dev/self-signed. |
-| `ssh_key_public` | string | Yes | — | Path to public SSH key sent to the cluster. `~` expands. |
-| `ssh_key_private` | string | Yes | — | Path used for direct node access. `~` expands. |
 | `allow_create` | bool | No | `false` | Permit `px setup` to create new clusters. Set `true` to enable provisioning. Attaching via `existing_cluster_id` always works regardless of this flag. |
 | `allow_destroy` | bool | No | `false` | Permit `px destroy` globally. Can be overridden per-cluster (see below). |
 
@@ -75,8 +71,6 @@ api:
   token: "${SCYLLA_CLOUD_API_TOKEN}"
   timeout: 300
   ssl_verify: true
-  ssh_key_public: ~/.ssh/id_ed25519.pub
-  ssh_key_private: ~/.ssh/id_ed25519
   allow_create: false   # set true to enable cluster creation
   allow_destroy: false  # set true (or override per-cluster) to enable destroy
 
@@ -318,8 +312,6 @@ Sample entries:
 ```yaml
 api:
   token: "${SCYLLA_CLOUD_API_TOKEN}"
-  ssh_key_public: ~/.ssh/id_ed25519.pub
-  ssh_key_private: ~/.ssh/id_ed25519
 
 clusters:
   x1:

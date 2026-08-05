@@ -89,8 +89,6 @@ api:
   token: ${SCYLLA_CLOUD_API_TOKEN}   # or a literal token string
   timeout: 300
   ssl_verify: true
-  ssh_key_public: ~/.ssh/id_ed25519.pub
-  ssh_key_private: ~/.ssh/id_ed25519
   allow_create: false              # must be true to create new clusters
   allow_destroy: false             # must be true to destroy clusters
 
@@ -155,8 +153,6 @@ clusters:
 | `token` | string | Yes | API token. Prefer `${SCYLLA_CLOUD_API_TOKEN}` env substitution |
 | `timeout` | int | No | Request timeout in seconds (default: `300`) |
 | `ssl_verify` | bool | No | Verify TLS certificates (default: `true`). Set `false` for self-signed certs |
-| `ssh_key_public` | string | Yes | Path to public SSH key provisioned on cluster nodes |
-| `ssh_key_private` | string | Yes | Path to private SSH key (used for direct node access) |
 | `allow_create` | bool | No | Allow `px setup` to create new clusters (default: `false`). Must be `true` to provision; attach via `existing_cluster_id` always works |
 | `allow_destroy` | bool | No | Allow `px destroy` globally (default: `false`). Can be overridden per-cluster |
 

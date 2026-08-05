@@ -9,8 +9,6 @@ api:
   token: "${SCYLLA_CLOUD_API_TOKEN}"             # Scylla Cloud API token (can use env var)
   timeout: 300                                   # API request timeout in seconds
   ssl_verify: true                               # Verify SSL certificates
-  ssh_key_public: "~/.ssh/id_ed25519.pub"       # Global public SSH key path
-  ssh_key_private: "~/.ssh/id_ed25519"          # Global private SSH key path
   allow_create: false                            # Safety guard: set to true to allow 'px setup' to create any cluster
   allow_destroy: false                           # Safety guard: set to true to allow 'px destroy' on any cluster (can be overridden per cluster)
 

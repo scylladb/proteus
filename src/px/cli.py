@@ -154,13 +154,6 @@ def _cluster_from_sources(conf: dict[str, Any], args: argparse.Namespace) -> tup
     if cluster_ref in clusters and isinstance(clusters[cluster_ref], dict):
         base = clusters[cluster_ref]
     merged = _merge_cluster_overrides(base, args)
-
-    # Backward-compatible defaults: allow SSH key paths at global api level.
-    api_cfg = conf.get("api") or {}
-    for key in ("ssh_key_public", "ssh_key_private"):
-        if not merged.get(key) and api_cfg.get(key):
-            merged[key] = api_cfg.get(key)
-
     return cluster_ref, merged
 
 
