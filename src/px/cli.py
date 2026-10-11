@@ -270,25 +270,22 @@ def _apply_az_placement(
     """Set availabilityZoneIdsOverride + placement on the create payload.
 
     Reuses the enterprise-side vocabulary:
-      az_mode: "single-az" | "multi-az"   (unset -> leave to API default)
+      az_mode: "single-az" | "multi-az" | <zone>   (unset -> leave to API default)
       racks:   N                          (multi-az: how many AZs to span, default 3)
 
     single-az: pin every rack to one AZ (repeat the AZ ID replicationFactor
     times) and set placement=true, as the Cloud API requires for a single AZ.
+    <zone>:    single-az in that zone, given as the AZ ID (e.g. "use1-az1", or
+               "us-central1-b" on GCP) or the zone name the API reports.
     multi-az:  spread across the first `racks` distinct AZs in the region.
     """
     az_mode = str(cluster.get("az_mode") or "").strip().lower()
     if not az_mode:
         return
-    if az_mode not in ("single-az", "multi-az"):
-        raise ConfigError(
-            f"{cluster_ref}: az_mode must be 'single-az' or 'multi-az' (got '{az_mode}')"
-        )
 
     resp = api.get_cloud_account_zones(account_id, cloud_account_id, region_id)
-    zones = resp.get("data") or []
-    az_ids = [str(z["id"]) for z in zones if isinstance(z, dict) and z.get("id")]
-    az_ids.sort()
+    zones = [z for z in (resp.get("data") or []) if isinstance(z, dict) and z.get("id")]
+    az_ids = sorted(str(z["id"]) for z in zones)
     if not az_ids:
         raise ConfigError(
             f"{cluster_ref}: no availability zones returned for region_id={region_id}"
@@ -296,7 +293,19 @@ def _apply_az_placement(
 
     rf = int(payload.get("replicationFactor", 3))
 
-    if az_mode == "single-az":
+    if az_mode not in ("single-az", "multi-az"):
+        match = next(
+            (str(z["id"]) for z in zones
+             if az_mode in (str(z["id"]).lower(), str(z.get("name") or "").lower())),
+            None,
+        )
+        if not match:
+            raise ConfigError(
+                f"{cluster_ref}: az_mode must be 'single-az', 'multi-az' or a zone of the region "
+                f"({', '.join(az_ids)}); got '{az_mode}'"
+            )
+        override = [match] * max(rf, 1)
+    elif az_mode == "single-az":
         override = [az_ids[0]] * max(rf, 1)
     else:  # multi-az
         racks = int(cluster.get("racks", 3))
