@@ -280,7 +280,8 @@ def _apply_az_placement(
     multi-az:  spread across the first `racks` distinct AZs in the region.
     """
     az_mode = str(cluster.get("az_mode") or "").strip().lower()
-    if not az_mode:
+    has_zone_list = cluster.get("number_of_az") not in (None, "") or bool(cluster.get("zones"))
+    if not az_mode and not has_zone_list:
         return
 
     resp = api.get_cloud_account_zones(account_id, cloud_account_id, region_id)
@@ -293,7 +294,35 @@ def _apply_az_placement(
 
     rf = int(payload.get("replicationFactor", 3))
 
-    if az_mode not in ("single-az", "multi-az"):
+    if has_zone_list:
+        # zones: picked AZs (ID or name); empty/missing picks up to number_of_az use the lowest free AZ IDs
+        raw_picks = [str(z or "").strip().lower() for z in (cluster.get("zones") or [])]
+        count = int(cluster.get("number_of_az") or len(raw_picks) or 3)
+        if count > len(az_ids):
+            raise ConfigError(
+                f"{cluster_ref}: region has only {len(az_ids)} AZ(s) "
+                f"({', '.join(az_ids)}) but number_of_az={count} was requested"
+            )
+        # Keep each pick in its slot; empty slots take the lowest unused AZ IDs
+        chosen = (raw_picks + [""] * count)[:count]
+        for idx, pick in enumerate(chosen):
+            if not pick:
+                continue
+            match = next(
+                (str(z["id"]) for z in zones
+                 if pick in (str(z["id"]).lower(), str(z.get("name") or "").lower())),
+                None,
+            )
+            if not match or match in chosen[:idx]:
+                raise ConfigError(
+                    f"{cluster_ref}: zone '{pick}' is not in the region ({', '.join(az_ids)}) or is listed twice"
+                )
+            chosen[idx] = match
+        free = [z for z in az_ids if z not in chosen]
+        chosen = [z or free.pop(0) for z in chosen]
+        # A single AZ hosts every rack, so repeat it once per replica as the API requires
+        override = chosen * max(rf, 1) if count == 1 else chosen
+    elif az_mode not in ("single-az", "multi-az"):
         match = next(
             (str(z["id"]) for z in zones
              if az_mode in (str(z["id"]).lower(), str(z.get("name") or "").lower())),
